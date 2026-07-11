@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Home UPI Payment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/4c7f9e6b36.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      background: #f5f7fa;
+      color: #222;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding: 40px;
+      margin: 0;
+    }
+    .container {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 30px;
+      width: 440px;
+      max-width: 95%;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      color: #00bcd4;
+      margin-bottom: 10px;
+    }
+    #amount {
+      font-size: 1.8em;
+      margin: 20px 0;
+      color: #444;
+    }
+    .qr-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+    .qr-toggle i {
+      font-size: 22px;
+      background: #eeeeee;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #666;
+    }
+    .qr-toggle i.selected {
+      background: #00bcd4;
+      color: #fff;
+    }
+    .upi-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .upi-app {
+      width: 80px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .upi-app img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: 0.3s;
+    }
+    .upi-app.selected img {
+      border-color: #00bcd4;
+    }
+    .qr-box {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 20px auto;
+      width: fit-content;
+      box-shadow: 0 2px 8px rgba(0, 188, 212, 0.15);
+    }
+    #upiInputBox {
+      margin-top: 10px;
+      display: none;
+    }
+    #upiIdInput {
+      padding: 10px;
+      width: 90%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .btn-pay {
+      background: #00bcd4;
+      color: #fff;
+      padding: 12px 24px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      margin-top: 20px;
+    }
+    .btn-pay:hover {
+      background: #0097a7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔁 Monthly Payment</h1>
+    <p>Your total usage bill is:</p>
+    <div id="amount">₹0.00</div>
+
+    <div class="qr-toggle">
+      <i class="fas fa-qrcode selected" id="qrIcon" title="Pay by QR"></i>
+      <i class="fas fa-lock" id="upiIcon" title="Pay by UPI ID"></i>
+    </div>
+
+    <div id="qrBox" class="qr-box">
+      <img id="qrImage" src="" width="200" />
+      <p>or pay via: <strong>yourupi@bank</strong></p>
+    </div>
+
+    <div id="upiInputBox">
+      <input type="password" id="upiIdInput" placeholder="Enter your UPI ID" />
+    </div>
+
+    <div class="upi-grid">
+      <div class="upi-app" data-app="Google Pay">
+        <img src="https://img.icons8.com/color/96/google-pay-india.png" alt="GPay">
+        <div>GPay</div>
+      </div>
+      <div class="upi-app" data-app="PhonePe">
+        <img src="https://img.icons8.com/?size=160&id=1ikvU0YpmWHv&format=png" alt="PhonePe">
+        <div>PhonePe</div>
+      </div>
+      <div class="upi-app" data-app="Paytm">
+        <img src="https://img.icons8.com/color/96/paytm.png" alt="Paytm">
+        <div>Paytm</div>
+      </div>
+      <div class="upi-app" data-app="Amazon Pay">
+        <img src="https://img.icons8.com/color/96/amazon.png" alt="Amazon Pay">
+        <div>Amazon</div>
+      </div>
+    </div>
+
+  <button id="payBtn" class="btn-pay">✅ Pay Now</button>
+  
+  </div>
+<script>
+let selectedMethod = 'qr';
+let selectedApp = null;
+let currentAmount = 0;
+
+async function fetchAmount() {
+  const res = await fetch("http://127.0.0.1:5000/billing");
+  const data = await res.json();
+  currentAmount = data.total_cost || 0;
+  document.getElementById("amount").innerText = `₹${currentAmount}`;
+  const qr = `upi://pay?pa=yourupi@bank&pn=SmartEnergyBilling&am=${currentAmount}&cu=INR&tn=Energy+Bill`;
+  document.getElementById("qrImage").src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=200x200`;
+}
+
+document.querySelectorAll(".upi-app").forEach(app => {
+  app.addEventListener("click", () => {
+    document.querySelectorAll(".upi-app").forEach(el => el.classList.remove("selected"));
+    app.classList.add("selected");
+    selectedApp = app.getAttribute("data-app");
+  });
+});
+
+document.getElementById("qrIcon").addEventListener("click", () => {
+  selectedMethod = "qr";
+  document.getElementById("qrBox").style.display = "block";
+  document.getElementById("upiInputBox").style.display = "none";
+  document.getElementById("qrIcon").classList.add("selected");
+  document.getElementById("upiIcon").classList.remove("selected");
+});
+
+document.getElementById("upiIcon").addEventListener("click", () => {
+  selectedMethod = "upi";
+  document.getElementById("qrBox").style.display = "none";
+  document.getElementById("upiInputBox").style.display = "block";
+  document.getElementById("upiIcon").classList.add("selected");
+  document.getElementById("qrIcon").classList.remove("selected");
+});
+
+document.getElementById("payBtn").addEventListener("click", async () => {
+  if (!selectedApp) return alert("Please select a UPI app.");
+  let upiId = "";
+  if (selectedMethod === "upi") {
+    upiId = document.getElementById("upiIdInput").value.trim();
+    if (!upiId) return alert("Enter your UPI ID.");
+  }
+
+  // Post payment details to Flask
+  const response = await fetch("http://127.0.0.1:5000/process_mock_upi", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: 1, // replace with logged-in user ID dynamically
+      amount: currentAmount,
+      upi_app: selectedApp,
+      upi_id: upiId,
+      payment_status: "success"
+    }),
+  });
+
+  if (response.ok) {
+    document.getElementById("amount").innerText = "--";
+    alert("✅ Payment successful!");
+    setTimeout(() => window.location.href = "dashboard.html", 1500);
+  } else {
+    alert("❌ Payment failed. Please try again.");
+  }
+});
+
+fetchAmount();
+</script>
+
+  
+</body>
+</html>

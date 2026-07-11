@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Energy History</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f9fafa;
+      color: #222;
+      font-family: 'Poppins', sans-serif;
+      padding: 30px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00bcd4;
+      font-size: 2rem;
+      margin-bottom: 40px;
+    }
+
+    #chart-container {
+      width: 90%;
+      max-width: 900px;
+      background: #ffffff;
+      margin: auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    i.fa-chart-line {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-chart-line"></i> Energy Usage History</h1>
+  <div id="chart-container">
+    <canvas id="usageChart" width="400" height="200"></canvas>
+  </div>
+
+  <script>
+    let usageChart;
+
+    async function fetchAndUpdateChart() {
+      const response = await fetch("http://127.0.0.1:5000/history");
+      const data = await response.json();
+
+      const dates = data.dates;
+      const usages = data.usages;
+
+      if (!usageChart) {
+        const ctx = document.getElementById("usageChart").getContext("2d");
+        usageChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: dates,
+            datasets: [{
+              label: "Energy Usage (kWh)",
+              data: usages,
+              borderColor: "#00bcd4",
+              backgroundColor: "rgba(0, 188, 212, 0.1)",
+              pointBackgroundColor: "#00bcd4",
+              pointRadius: 5,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            animation: false,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#333',
+                  font: {
+                    size: 14
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: { color: '#666' },
+                grid: { color: '#eee' }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: '#666' },
+                grid: { color: '#eee' }
+              }
+            }
+          }
+        });
+      } else {
+        usageChart.data.labels = dates;
+        usageChart.data.datasets[0].data = usages;
+        usageChart.update();
+      }
+    }
+
+    fetchAndUpdateChart();              // First load
+    setInterval(fetchAndUpdateChart, 10000);  // Refresh every 10 seconds
+  </script>
+</body>
+</html>
+
+

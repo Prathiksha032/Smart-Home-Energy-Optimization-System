@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Energy Dashboard</title>
+  
+  <!-- External Styles -->
+  <link rel="stylesheet" href="stl.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <h1>Smart Energy Dashboard</h1>
+    <p>Welcome Prathu!</p>
+  </header>
+
+  <nav>
+    <a href="history.html" class="nav-btn">View History</a>
+    <a href="billing.html" class="nav-btn">View  Predicted Bill </a>
+    <a href="price.html" class="nav-btn">Predicted Prices</a>
+    <a href="payment.html" class="nav-btn">Pay Bill</a>
+  </nav>
+
+  <div class="dashboard-cont">
+    <section class="devices">
+      <h2>Devices</h2>
+      <div class="device-grid">
+        <div class="device-card">
+          <span>Light</span>
+          <label class="switch">
+            <input type="checkbox" id="light-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="device-card">
+          <span>Air Conditioner</span>
+          <label class="switch">
+            <input type="checkbox" id="ac-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="device-card">
+          <span>Fan</span>
+          <label class="switch">
+            <input type="checkbox" id="fan-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="device-card">
+          <span>Geyser</span>
+          <label class="switch">
+            <input type="checkbox" id="geyser-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="device-card">
+          <span>TV</span>
+          <label class="switch">
+            <input type="checkbox" id="tv-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="suggestion-box">
+      <h2>AI Suggestion</h2>
+      <p id="prediction-text">Analyzing data.. please wait</p>
+    </section>
+
+    <h2>Predicted Usage:</h2>
+    <p id="usage-value">0.00 kWh</p>
+
+    <h2>Estimated Cost:</h2>
+    <p id="cost-value">₹0.00</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
+
+

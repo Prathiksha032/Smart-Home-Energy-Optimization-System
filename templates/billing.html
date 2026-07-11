@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Billing Summary</title>
+  <link rel="stylesheet" href="billing.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="billing-container">
+    <h1>💰 Billing Prediction</h1>
+    <p>Total Energy Consumed: <span id="total-kwh">--</span> kWh</p>
+    <p>Total Cost: ₹<span id="total-cost">--</span></p>
+
+    <canvas id="billingChart" width="400" height="200"></canvas>
+  </div>
+
+  <script src="billing.js"></script>
+</body>
+</html>
